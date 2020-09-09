@@ -1,5 +1,6 @@
 import json
 import os
+from random import randint
 
 tweets = []
 with open("tweets.json", "r") as rfile:
@@ -7,8 +8,7 @@ with open("tweets.json", "r") as rfile:
         t = {}
         data = json.loads(line)
         if data['lang'] == 'en':
-            t['Source_Product_Review_ID'] = None
-            t['Review_Source'] = 'Twitter'
+            t['Source_Product_Review_ID'] = 'twitter#'+str(randint(1,500))
             t['Product_Name'] = None
             t['Product_Category'] = None
             t['Product_Price'] = None
