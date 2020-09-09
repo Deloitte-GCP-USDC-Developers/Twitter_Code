@@ -39,5 +39,5 @@ for i, text in enumerate(f1):
 for filename in os.listdir(dirname):
     if filename.endswith(".json"):
         path = dirname + "/" + filename
-        command = "gsutil cp %s gs://tidal-glider-217500-files-source-1586544872" % path
+        command = "gsutil cp %s gs://dlt-sntmnt-poc-284722-files-source-1599614649" % path
         os.system(command)
