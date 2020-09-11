@@ -25,3 +25,5 @@ export FILES_ERROR=dlt-sntmnt-poc-284722-files-error-1599615079
 ##Create your Coldline Cloud Storage bucket. FILES_SUCCESSis set up as an environment
 ##variable with a unique name for the bucket that stores success files.
 export FILES_SUCCESS=dlt-sntmnt-poc-284722-files-success-1599615235
+
+echo thisisa string

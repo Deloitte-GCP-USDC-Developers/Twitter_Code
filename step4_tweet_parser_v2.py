@@ -8,7 +8,8 @@ with open("tweets.json", "r") as rfile:
         t = {}
         data = json.loads(line)
         if data['lang'] == 'en':
-            t['Source_Product_Review_ID'] = 'twitter#'+str(randint(1,500))
+            t['Source_Product_Review_ID'] = 'twitter#'+data['user']['name']+'#'+str(randint(1,500))
+            t['Review_Source'] = 'Twitter'
             t['Product_Name'] = None
             t['Product_Category'] = None
             t['Product_Price'] = None
@@ -39,5 +40,5 @@ for i, text in enumerate(f1):
 for filename in os.listdir(dirname):
     if filename.endswith(".json"):
         path = dirname + "/" + filename
-        command = "gsutil cp %s gs://tidal-glider-217500-files-source-1586544872" % path
+        command = "gsutil cp %s gs://dlt-sntmnt-poc-284722-files-source-1599614649" % path
         os.system(command)
