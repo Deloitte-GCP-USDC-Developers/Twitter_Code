@@ -8,7 +8,8 @@ with open("tweets.json", "r") as rfile:
         t = {}
         data = json.loads(line)
         if data['lang'] == 'en':
-            t['Source_Product_Review_ID'] = 'twitter#'+str(randint(1,500))
+            t['Source_Product_Review_ID'] = 'twitter#'+data['user']['name']+'#'+str(randint(1,500))
+            t['Review_Source'] = 'Twitter'
             t['Product_Name'] = None
             t['Product_Category'] = None
             t['Product_Price'] = None
