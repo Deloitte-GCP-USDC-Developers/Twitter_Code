@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 tweepy = "*"
+pandas = "*"
+pandas-gbq = "*"
 
 [requires]
 python_version = "3.8"

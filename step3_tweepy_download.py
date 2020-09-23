@@ -1,60 +1,51 @@
+import string
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
 import tweepy
+import pandas
+import pandas_gbq
 import pprint
 import neeraj_twitter_credentials
 
-# # # # TWITTER STREAMER # # # #
-class TwitterStreamer():
-    """    Class for streaming and processing live tweets."""
-    def __init__(self):
-        pass
-    
-    def stream_tweets(self, fetched_tweets_filename, hash_tag_list):
-        # This handles Twitter authetification and the connection to Twitter Streaming API
-        listener = StdOutListener(fetched_tweets_filename)
-        auth = OAuthHandler(neeraj_twitter_credentials.CONSUMER_KEY, neeraj_twitter_credentials.CONSUMER_SECRET)
-        auth.set_access_token(neeraj_twitter_credentials.ACCESS_TOKEN, neeraj_twitter_credentials.ACCESS_TOKEN_SECRET)
-        stream = Stream(auth, listener)
-
-        # This line filter Twitter Streams to capture data by the keywords:
-        stream.filter(track=hash_tag_list)
-
-
-# # # # TWITTER STREAM LISTENER # # # #
-class StdOutListener(StreamListener):
-    """    This is a basic listener that just prints received tweets to stdout."""
-    def __init__(self, fetched_tweets_filename):
-        self.fetched_tweets_filename = fetched_tweets_filename
-
-    def on_data(self, data):
-        try:
-            print(data)
-            with open(self.fetched_tweets_filename, 'a') as tf:
-                tf.write(data)
-            return True
-        except BaseException as e:
-            print("Error on_data %s" % str(e))
-        return True
-
-
-    def on_error(self, status):
-        print(status)
-
+printable = string.printable
 
 if __name__ == '__main__':
-
-    # Authenticate using config.py and connect to Twitter Streaming API.
-    hash_tag_list =[ "Sony Playstation VR" ]
-    
-    fetched_tweets_filename = "tweets.json"
-
-    auth = OAuthHandler(neeraj_twitter_credentials.CONSUMER_KEY, neeraj_twitter_credentials.CONSUMER_SECRET)
-    auth.set_access_token(neeraj_twitter_credentials.ACCESS_TOKEN, neeraj_twitter_credentials.ACCESS_TOKEN_SECRET)
+    df = pandas.read_csv('../product_list.csv')
+    results = []
+    for (i, row) in df.iterrows():
+        # if i < 137:
+        #     continue
+        # Authenticate using config.py and connect to Twitter Streaming API.
+        hash_tag_list =[ row['name'] ]
         
-    api = tweepy.API(auth)
+        fetched_tweets_filename = "tweets.json"
 
-    max_tweets = 100
-    searched_tweets = [status for status in tweepy.Cursor(api.search, q=hash_tag_list).items(max_tweets)]
-    print([t.entities['urls'][0]['url'] for t in searched_tweets if len(t.entities['urls']) > 0])
+        auth = OAuthHandler(neeraj_twitter_credentials.CONSUMER_KEY, neeraj_twitter_credentials.CONSUMER_SECRET)
+        auth.set_access_token(neeraj_twitter_credentials.ACCESS_TOKEN, neeraj_twitter_credentials.ACCESS_TOKEN_SECRET)
+            
+        api = tweepy.API(auth)
+
+        max_tweets = 10
+        results = [{
+            'Source_Product_Review_ID': 'TWITTER#' + ''.join(str(row['name']).split(' ')) + '#' + str(status.id),
+            'Review_Source': "Twitter",
+            'Product_Name': row['name'],
+            'Product_Category': row['category'],
+            'Review_Text': ''.join(filter(lambda x: x in printable, status.text)),
+            'User_Id': str(status.user.id),
+            'User_Name': status.user.screen_name,
+            'Review_date': status.created_at,
+            'Location': status.user.location
+        } for status in tweepy.Cursor(api.search, q=hash_tag_list).items(max_tweets)]
+        print(hash_tag_list[0], results)
+
+        pandas.DataFrame(results).to_csv("twitter.csv", mode='a', header=False)
+        # for r in results:
+
+        #     print(r)
+        #     project_id = 'dlt-sntmnt-poc-284722'
+        #     pandas_gbq.to_gbq(
+        #         pandas.DataFrame([r]), 'Sentiment.PRODUCT_REVIEWS_twitter', project_id=project_id, if_exists='append',
+            # )
+    
