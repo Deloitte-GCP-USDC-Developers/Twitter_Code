@@ -9,6 +9,7 @@ verify_ssl = true
 tweepy = "*"
 pandas = "*"
 pandas-gbq = "*"
+gsutil = "*"
 
 [requires]
 python_version = "3.8"
